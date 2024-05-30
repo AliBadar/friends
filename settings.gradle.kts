@@ -1,3 +1,4 @@
+//asjdk
 pluginManagement {
     repositories {
         google {
