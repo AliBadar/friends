@@ -42,6 +42,16 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
+
+
+
+    tasks.withType<Test> {
+        testLogging {
+            events("passed", "failed", "skipped", "standardOut", "standardError")
+        }
+    }
+
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
