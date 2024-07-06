@@ -11,14 +11,23 @@ android {
         applicationId = "com.currencyconverter.friends"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.1"
+        versionCode = 2
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
     }
+
+    //    signingConfigs {
+//        create("release") {
+//            storeFile = file("D:\\MyWork\\TestProject\\SiginInDemo\\demokeystore.jks")
+//            storePassword = System.getenv("KEYSTORE_PASS")
+//            keyAlias = "demoalias"
+//            keyPassword = "123456"
+//        }
+//    }
 
     buildTypes {
         release {
