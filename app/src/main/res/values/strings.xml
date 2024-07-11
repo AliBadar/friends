@@ -4,4 +4,5 @@
     <string name="password">Password\n</string>
     <string name="signUp">SignUp\n</string>
     <string name="timeline">Timeline</string>
+    <string name="createaccount">Create an account</string>
 </resources>
