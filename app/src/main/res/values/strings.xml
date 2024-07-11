@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Friends</string>
+    <string name="email">Email</string>
+    <string name="password">Password\n</string>
+    <string name="signUp">SignUp\n</string>
+    <string name="timeline">Timeline</string>
 </resources>
