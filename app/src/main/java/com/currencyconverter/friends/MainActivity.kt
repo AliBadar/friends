@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.currencyconverter.friends.signup.SignUp
 import com.currencyconverter.friends.ui.theme.FriendsTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,13 +28,16 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    Box(modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center){
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_launcher),
-                            contentDescription = null
-                        )
-                    }
+
+                    SignUp()
+
+//                    Box(modifier = Modifier.fillMaxSize(),
+//                        contentAlignment = Alignment.Center){
+//                        Image(
+//                            painter = painterResource(id = R.drawable.ic_launcher),
+//                            contentDescription = null
+//                        )
+//                    }
 
 
                     //Greeting("Android")
