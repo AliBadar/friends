@@ -73,6 +73,7 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.extensions)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -89,4 +90,7 @@ dependencies {
     testImplementation(libs.junit.api)
     testImplementation(libs.junit.params)
     testRuntimeOnly(libs.junit)
+
+//    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+//    implementation("androidx.lifecycle:lifecycle-extensions:2.6.1")
 }
