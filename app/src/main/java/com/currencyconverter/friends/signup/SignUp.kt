@@ -34,6 +34,15 @@ import com.currencyconverter.friends.ui.theme.Typography
 @Composable
 @Preview(device = Devices.NEXUS_5)
 fun SignUp() {
+
+    var email by remember {
+        mutableStateOf("")
+    }
+
+    var password by remember {
+        mutableStateOf("")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,14 +54,6 @@ fun SignUp() {
         ScreenTitle(R.string.createaccount)
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        var email by remember {
-            mutableStateOf("")
-        }
-
-        var password by remember {
-            mutableStateOf("")
-        }
 
         EmailField(email) { it ->
             email = it
@@ -77,30 +78,44 @@ private fun PasswordField(
     onValueChange: (String) -> Unit
 ) {
 
+
     var isVisible by remember {
         mutableStateOf(false)
     }
+
+    val visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
 
     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
         value = value,
         onValueChange = onValueChange,
         trailingIcon = {
-            IconButton(onClick = {
+            VisibilityToggle(isVisible){
                 isVisible = !isVisible
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_visible),
-                    contentDescription = stringResource(
-                        id = R.string.toggleVisibility
-                    )
-                )
             }
 
         },
-        visualTransformation = if (isVisible)   VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation = visualTransformation,
         label = {
             Text(text = stringResource(id = R.string.password))
         })
+}
+
+@Composable
+private fun VisibilityToggle(isVisible: Boolean, onToggle : () -> Unit) {
+
+    IconButton(onClick = {
+        onToggle()
+    }) {
+
+        val resource = if (isVisible) R.drawable.ic_visible else R.drawable.ic_invisible
+
+        Icon(
+            painter = painterResource(id = resource),
+            contentDescription = stringResource(
+                id = R.string.toggleVisibility
+            )
+        )
+    }
 }
 
 @Composable
