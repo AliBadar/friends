@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.currencyconverter.friends.domain.CredentialsValidationResult
 import com.currencyconverter.friends.domain.RegexCredentialsValidator
+import com.currencyconverter.friends.domain.user.User
 import com.currencyconverter.friends.signup.states.SignUpState
 import java.util.regex.Pattern
 
@@ -21,7 +22,10 @@ class SignUpViewModel(private val regexCredentialsValidator: RegexCredentialsVal
             CredentialsValidationResult.InvalidPassword -> {
                 SignUpState.BadPassword
             }
-            CredentialsValidationResult.Valid -> TODO()
+            CredentialsValidationResult.Valid -> {
+                val user = User("mayaID", "maya@friends.com", "About maya")
+                SignUpState.SignedUp(user)
+            }
         }
 
         _mutableSignUpState.value = state
