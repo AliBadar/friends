@@ -1,6 +1,8 @@
 package com.currencyconverter.friends.signup
 
 import com.currencyconverter.friends.InstantTaskExecutorExtension
+import com.currencyconverter.friends.domain.CredentialsValidationResult
+import com.currencyconverter.friends.domain.RegexCredentialsValidator
 import com.currencyconverter.friends.signup.states.SignUpState
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -24,7 +26,7 @@ class CredentialsValidationTest {
     )
     fun inValidEmail(email: String) {
 
-        val viewModel = SignUpViewModel()
+        val viewModel = SignUpViewModel(RegexCredentialsValidator())
 
         viewModel.createAccount("email", ":password", ":About:")
 
@@ -45,7 +47,7 @@ class CredentialsValidationTest {
     )
     fun invalidPassword(){
 
-        val viewModel = SignUpViewModel()
+        val viewModel = SignUpViewModel(RegexCredentialsValidator())
 
 
         viewModel.createAccount(
@@ -53,6 +55,16 @@ class CredentialsValidationTest {
         )
 
         assertEquals(SignUpState.BadPassword, viewModel.signUpState.value)
+    }
+
+    @Test
+    fun validCredentials(){
+
+        val validator = RegexCredentialsValidator()
+
+        val result = validator.validate("john@gmail.com", "12ABcd3!^")
+
+        assertEquals(CredentialsValidationResult.Valid, result)
     }
 
 }
