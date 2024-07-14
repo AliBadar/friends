@@ -23,23 +23,24 @@ class SignUpViewModel(private val regexCredentialsValidator: RegexCredentialsVal
                 _mutableSignUpState.value = SignUpState.BadPassword
 
             CredentialsValidationResult.Valid ->
-                _mutableSignUpState.value = signUp(email, about, passowd)
+                _mutableSignUpState.value = userRepository.signUp(email, about, passowd)
         }
-
-
     }
 
-    val userCatalog = InMemoryUserCatalog()
+    private val userRepository = UserRepository(InMemoryUserCatalog())
 
-    private fun signUp(
-        email: String,
-        about: String,
-        passowd: String
-    ) = try {
-        val user = userCatalog.createUser(email, about, passowd)
-        SignUpState.SignedUp(user)
-    } catch (_:  InMemoryUserCatalog.DuplicateAccountException) {
-        SignUpState.DuplicateAccount
+    class UserRepository(private val userCatalog: InMemoryUserCatalog) {
+
+        fun signUp(
+            email: String,
+            about: String,
+            passowd: String
+        ) = try {
+            val user = userCatalog.createUser(email, about, passowd)
+            SignUpState.SignedUp(user)
+        } catch (_:  InMemoryUserCatalog.DuplicateAccountException) {
+            SignUpState.DuplicateAccount
+        }
     }
 
     class InMemoryUserCatalog(private val usersForgetPassword: MutableMap<String, MutableList<User>> = mutableMapOf()){
