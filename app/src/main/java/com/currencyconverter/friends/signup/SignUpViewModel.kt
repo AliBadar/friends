@@ -4,11 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.currencyconverter.friends.domain.CredentialsValidationResult
 import com.currencyconverter.friends.domain.RegexCredentialsValidator
-import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import com.currencyconverter.friends.domain.user.UserRepository
 import com.currencyconverter.friends.signup.states.SignUpState
 
-class SignUpViewModel(private val regexCredentialsValidator: RegexCredentialsValidator) {
+class SignUpViewModel(
+    private val regexCredentialsValidator: RegexCredentialsValidator,
+    private val userRepository: UserRepository
+) {
     private var _mutableSignUpState = MutableLiveData<SignUpState>()
     var signUpState: LiveData<SignUpState> = _mutableSignUpState
 
@@ -26,7 +28,5 @@ class SignUpViewModel(private val regexCredentialsValidator: RegexCredentialsVal
                 _mutableSignUpState.value = userRepository.signUp(email, about, passowd)
         }
     }
-
-    private val userRepository = UserRepository(InMemoryUserCatalog())
 
 }
