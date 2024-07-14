@@ -15,10 +15,32 @@ class CreateAnAccountTest {
     fun accountCreated() {
         val viewModel = SignUpViewModel(RegexCredentialsValidator())
 
-        viewModel.createAccount("maya@friends.com", "12ABcd3!^", "")
+        val maya = User("mayaId", "maya@friends.com", "About maya")
+        viewModel.createAccount(maya.email, "12ABcd3!^", maya.about)
 
-        val maya = User("mayaID", "maya@friends.com", "About maya")
 
-        assertEquals(SignUpState.SignedUp(maya),viewModel.signUpState.value)
+        assertEquals(SignUpState.SignedUp(maya), viewModel.signUpState.value)
+    }
+
+    @Test
+    fun anotherAccountCreated() {
+        val bob = User("bobId", "bob@friends.com", "about Bob")
+        val viewModel = SignUpViewModel(RegexCredentialsValidator())
+        viewModel.createAccount(bob.email, "Ple@seSubscribe1", bob.about)
+
+        assertEquals(SignUpState.SignedUp(bob), viewModel.signUpState.value)
+    }
+
+    @Test
+    fun createDuplicateAccount(){
+
+        val user = User("annaId", "anna@friends.com", "about Anna")
+
+        val viewModel = SignUpViewModel(RegexCredentialsValidator()).also {
+            it.createAccount(user.email, "12ABcd3!^", user.about)
+        }
+
+        viewModel.createAccount(user.email, "12ABcd3!^", user.about)
+        assertEquals(SignUpState.DuplicateAccount, viewModel.signUpState.value)
     }
 }
