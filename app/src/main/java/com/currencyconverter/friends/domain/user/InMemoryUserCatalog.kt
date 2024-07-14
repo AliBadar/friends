@@ -17,21 +17,21 @@ class InMemoryUserCatalog(private val usersForgetPassword: MutableMap<String, Mu
         return user
     }
 
-    private fun saveUser(
-        passowd: String,
-        user: User,
-    ) {
-        usersForgetPassword.getOrPut(passowd, ::mutableListOf).add(user)
+    private fun checkAccountExists(email: String) {
+        if (usersForgetPassword.values.flatten().any { it.email == email }) {
+            throw DuplicateAccountException()
+        }
     }
 
     private fun createUserIdFor(email: String): String {
         return email.takeWhile { it != '@' } + "Id"
     }
 
-    private fun checkAccountExists(email: String) {
-        if (usersForgetPassword.values.flatten().any { it.email == email }) {
-            throw DuplicateAccountException()
-        }
+    private fun saveUser(
+        passowd: String,
+        user: User,
+    ) {
+        usersForgetPassword.getOrPut(passowd, ::mutableListOf).add(user)
     }
 
 }

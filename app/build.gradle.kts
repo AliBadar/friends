@@ -80,6 +80,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+//    implementation(libs.androidx.compose.runtime.livedata)
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.0")
+    implementation("androidx.navigation:navigation-compose:2.7.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -90,6 +93,7 @@ dependencies {
     testImplementation(libs.junit.api)
     testImplementation(libs.junit.params)
     testRuntimeOnly(libs.junit)
+
 
 //    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 //    implementation("androidx.lifecycle:lifecycle-extensions:2.6.1")

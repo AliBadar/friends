@@ -14,7 +14,7 @@ class SignUpTest {
     fun performSignUp(){
         launchSignUpScreen(signUpTestRule) {
             typeEmail("email@test.com")
-            typePassword("password")
+            typePassword("PassWO2ord!")
             submit()
         } verify {
             timeLineScreenIsPresent()

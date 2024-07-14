@@ -13,14 +13,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.currencyconverter.friends.signup.SignUp
+import com.currencyconverter.friends.timeline.TimeLine
 import com.currencyconverter.friends.ui.theme.FriendsTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
             FriendsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -29,7 +36,21 @@ class MainActivity : ComponentActivity() {
                 ) {
 
 
-                    SignUp()
+
+                    NavHost(navController = navController, startDestination = SIGN_UP) {
+                        composable(SIGN_UP){
+                            SignUp {
+                                navController.navigate(TIME_LINE)
+                            }
+                        }
+
+                        composable(TIME_LINE){
+                            TimeLine()
+                        }
+
+                    }
+                    
+
 
 //                    Box(modifier = Modifier.fillMaxSize(),
 //                        contentAlignment = Alignment.Center){
@@ -44,6 +65,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val SIGN_UP = "signUp"
+        private const val TIME_LINE = "timeline"
     }
 }
 

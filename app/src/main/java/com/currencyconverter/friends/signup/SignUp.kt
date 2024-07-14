@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,23 +19,40 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.currencyconverter.friends.R
+import com.currencyconverter.friends.domain.RegexCredentialsValidator
+import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
+import com.currencyconverter.friends.domain.user.UserRepository
+import com.currencyconverter.friends.signup.states.SignUpState
 import com.currencyconverter.friends.ui.theme.Typography
+import kotlin.math.sign
 
 @Composable
-@Preview(device = Devices.NEXUS_5)
-fun SignUp() {
+fun SignUp(
+    onSignUp: () -> Unit,
+) {
+
+    val regexCredentialsValidator = RegexCredentialsValidator()
+    val userCatalog = InMemoryUserCatalog()
+    val userRepository = UserRepository(userCatalog)
+
+    val signUpViewModel = SignUpViewModel(regexCredentialsValidator, userRepository)
+
+    val signUpState by signUpViewModel.signUpState.observeAsState()
 
     var email by remember {
         mutableStateOf("")
@@ -41,6 +60,14 @@ fun SignUp() {
 
     var password by remember {
         mutableStateOf("")
+    }
+
+    var about by remember {
+        mutableStateOf("")
+    }
+
+    if (signUpState is SignUpState.SignedUp) {
+        onSignUp()
     }
 
     Column(
@@ -64,9 +91,20 @@ fun SignUp() {
 
         PasswordField(password) { password = it }
 
+        AboutField(
+            value = about,
+            onValueChange = { about = it },
+            //onDoneClicked = { with(screenState) { onSignUp(email, password, about) } }
+        )
         Spacer(modifier = Modifier.height(8.dp))
 
-        Button(modifier = Modifier.fillMaxWidth(), onClick = { /*TODO*/ }) {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(modifier = Modifier.fillMaxWidth(), onClick = {
+
+            signUpViewModel.createAccount(email, password, about)
+
+        }) {
             Text(text = stringResource(id = R.string.signUp))
         }
     }
@@ -75,7 +113,7 @@ fun SignUp() {
 @Composable
 private fun PasswordField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
 
 
@@ -83,13 +121,14 @@ private fun PasswordField(
         mutableStateOf(false)
     }
 
-    val visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
+    val visualTransformation =
+        if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
 
     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
         value = value,
         onValueChange = onValueChange,
         trailingIcon = {
-            VisibilityToggle(isVisible){
+            VisibilityToggle(isVisible) {
                 isVisible = !isVisible
             }
 
@@ -101,7 +140,7 @@ private fun PasswordField(
 }
 
 @Composable
-private fun VisibilityToggle(isVisible: Boolean, onToggle : () -> Unit) {
+private fun VisibilityToggle(isVisible: Boolean, onToggle: () -> Unit) {
 
     IconButton(onClick = {
         onToggle()
@@ -121,7 +160,7 @@ private fun VisibilityToggle(isVisible: Boolean, onToggle : () -> Unit) {
 @Composable
 private fun EmailField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
         value = value,
@@ -141,4 +180,24 @@ private fun ScreenTitle(@StringRes resource: Int) {
             text = stringResource(id = resource), style = Typography.headlineMedium
         )
     }
+}
+
+@Composable
+fun AboutField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    ) {
+    OutlinedTextField(
+        modifier = modifier.fillMaxWidth(),
+        value = value,
+        label = {
+            Text(text = stringResource(id = R.string.about))
+        },
+        onValueChange = onValueChange,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done
+        ),
+        //keyboardActions = KeyboardActions(onDone = { onDoneClicked() })
+    )
 }
