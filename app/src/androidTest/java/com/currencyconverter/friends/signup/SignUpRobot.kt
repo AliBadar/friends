@@ -50,4 +50,12 @@ class SignUpVerification(private val rule: AndroidComposeTestRule<ActivityScenar
 
     }
 
+    fun duplicateAccountErrorIsShown() {
+        val signedUpUserEmail = "alice@friends.com"
+        val signedUpUserPassword = "@l1cePass"
+        val duplicateAccountError = rule.activity.getString(R.string.duplicateAccountError)
+        rule.onNodeWithText(duplicateAccountError)
+            .assertIsDisplayed()
+    }
+
 }

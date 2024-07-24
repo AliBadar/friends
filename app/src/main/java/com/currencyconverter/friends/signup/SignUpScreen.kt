@@ -1,7 +1,9 @@
 package com.currencyconverter.friends.signup
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +15,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,43 +67,61 @@ fun SignUpScreen(
         onSignUp()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                16.dp
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    16.dp
+                )
+        ) {
+
+            ScreenTitle(R.string.createaccount)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            EmailField(email) { it ->
+                email = it
+
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            PasswordField(password) { password = it }
+
+            AboutField(
+                value = about,
+                onValueChange = { about = it },
+                //onDoneClicked = { with(screenState) { onSignUp(email, password, about) } }
             )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(modifier = Modifier.fillMaxWidth(), onClick = {
+
+                signUpViewModel.createAccount(email, password, about)
+
+            }) {
+                Text(text = stringResource(id = R.string.signUp))
+            }
+        }
+
+        if (signUpState is SignUpState.DuplicateAccount){
+            InfoMessage(stringResource = R.string.duplicateAccountError)
+        }
+    }
+}
+
+@Composable
+fun InfoMessage(@StringRes stringResource: Int) {
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.error)
     ) {
-
-        ScreenTitle(R.string.createaccount)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        EmailField(email) { it ->
-            email = it
-
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        PasswordField(password) { password = it }
-
-        AboutField(
-            value = about,
-            onValueChange = { about = it },
-            //onDoneClicked = { with(screenState) { onSignUp(email, password, about) } }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(modifier = Modifier.fillMaxWidth(), onClick = {
-
-            signUpViewModel.createAccount(email, password, about)
-
-        }) {
-            Text(text = stringResource(id = R.string.signUp))
-        }
+        Text(text = stringResource(id = stringResource))
     }
 }
 
@@ -180,7 +202,7 @@ fun AboutField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    ) {
+) {
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
         value = value,
