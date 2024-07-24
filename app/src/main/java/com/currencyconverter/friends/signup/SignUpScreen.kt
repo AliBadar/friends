@@ -37,14 +37,13 @@ import com.currencyconverter.friends.ui.theme.Typography
 
 @Composable
 fun SignUpScreen(
+    signUpViewModel: SignUpViewModel,
     onSignUp: () -> Unit,
 ) {
 
     val regexCredentialsValidator = RegexCredentialsValidator()
     val userCatalog = InMemoryUserCatalog()
     val userRepository = UserRepository(userCatalog)
-
-    val signUpViewModel = SignUpViewModel(regexCredentialsValidator, userRepository)
 
     val signUpState by signUpViewModel.signUpState.observeAsState()
 

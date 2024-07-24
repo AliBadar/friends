@@ -14,10 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.currencyconverter.friends.signup.SignUpScreen
+import com.currencyconverter.friends.signup.SignUpViewModel
 import com.currencyconverter.friends.timeline.TimeLine
 import com.currencyconverter.friends.ui.theme.FriendsTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val signUpViewModel: SignUpViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +38,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(navController = navController, startDestination = SIGN_UP) {
                         composable(SIGN_UP){
-                            SignUpScreen {
+                            SignUpScreen(signUpViewModel) {
                                 navController.navigate(TIME_LINE)
                             }
                         }
@@ -44,7 +48,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                     }
-                    
+
 
 
 //                    Box(modifier = Modifier.fillMaxSize(),
