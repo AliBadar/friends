@@ -9,6 +9,7 @@ sealed class SignUpState {
 
     object BadEmail: SignUpState()
     object BadPassword : SignUpState()
-
+    object BackEndError : SignUpState()
+    object Offline : SignUpState()
 
 }

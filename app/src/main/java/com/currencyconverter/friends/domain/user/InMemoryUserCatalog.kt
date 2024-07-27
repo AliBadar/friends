@@ -2,8 +2,9 @@ package com.currencyconverter.friends.domain.user
 
 import com.currencyconverter.friends.domain.exeptions.DuplicateAccountException
 
-class InMemoryUserCatalog(private val usersForgetPassword: MutableMap<String, MutableList<User>> = mutableMapOf()){
-    fun createUser(
+class InMemoryUserCatalog(private val usersForgetPassword: MutableMap<String, MutableList<User>> = mutableMapOf()) :
+    UserCatalog {
+    override fun createUser(
         email: String,
         about: String,
         passowd: String
