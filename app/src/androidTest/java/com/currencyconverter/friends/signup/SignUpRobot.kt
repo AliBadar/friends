@@ -74,4 +74,10 @@ class SignUpVerification(private val rule: AndroidComposeTestRule<ActivityScenar
             .assertIsDisplayed()
     }
 
+    fun badEmailErrorIsShown() {
+        val badEmailError = rule.activity.getString(R.string.badEmailError)
+        rule.onNodeWithText(badEmailError)
+            .assertIsDisplayed()
+    }
+
 }

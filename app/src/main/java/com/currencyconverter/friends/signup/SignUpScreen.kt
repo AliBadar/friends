@@ -63,6 +63,10 @@ fun SignUpScreen(
         mutableStateOf("")
     }
 
+    var isBadEmail by remember {
+        mutableStateOf(false)
+    }
+
     if (signUpState is SignUpState.SignedUp) {
         onSignUp()
     }
@@ -80,7 +84,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            EmailField(email) { it ->
+            EmailField(email, isBadEmail) { it ->
                 email = it
 
             }
@@ -107,7 +111,9 @@ fun SignUpScreen(
             }
         }
 
-        if (signUpState is SignUpState.DuplicateAccount){
+        if (signUpState is SignUpState.BadEmail){
+            isBadEmail = true
+        }else if (signUpState is SignUpState.DuplicateAccount){
             InfoMessage(stringResource = R.string.duplicateAccountError)
         } else if (signUpState is SignUpState.BackEndError){
             InfoMessage(stringResource = R.string.createAccountError)
@@ -179,13 +185,16 @@ private fun VisibilityToggle(isVisible: Boolean, onToggle: () -> Unit) {
 @Composable
 private fun EmailField(
     value: String,
+    isError: Boolean,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
         value = value,
+        isError = isError,
         onValueChange = onValueChange,
         label = {
-            Text(text = stringResource(id = R.string.email))
+            val resource = if (isError) R.string.badEmailError else R.string.email
+            Text(text = stringResource(id = resource))
         })
 }
 
