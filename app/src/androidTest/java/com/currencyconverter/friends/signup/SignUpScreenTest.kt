@@ -56,6 +56,17 @@ class SignUpScreenTest {
     }
 
     @Test
+    fun displayBadPassword() {
+        launchSignUpScreen(signUpTestRule) {
+            typeEmail("alice@friends.com")
+            typePassword("abc")
+            submit()
+        } verify {
+            badPasswordErrorIsShown()
+        }
+    }
+
+    @Test
     fun displayDuplicateAccountError() {
 
 

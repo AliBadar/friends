@@ -80,4 +80,10 @@ class SignUpVerification(private val rule: AndroidComposeTestRule<ActivityScenar
             .assertIsDisplayed()
     }
 
+    fun badPasswordErrorIsShown() {
+        val badPasswordError = rule.activity.getString(R.string.badPasswordError)
+        rule.onNodeWithText(badPasswordError)
+            .assertIsDisplayed()
+    }
+
 }

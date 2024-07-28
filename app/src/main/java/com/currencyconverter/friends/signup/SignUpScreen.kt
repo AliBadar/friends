@@ -67,6 +67,10 @@ fun SignUpScreen(
         mutableStateOf(false)
     }
 
+    var isBadPassword by remember {
+        mutableStateOf(false)
+    }
+
     if (signUpState is SignUpState.SignedUp) {
         onSignUp()
     }
@@ -91,7 +95,7 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            PasswordField(password) { password = it }
+            PasswordField(password, isBadPassword) { password = it }
 
             AboutField(
                 value = about,
@@ -113,7 +117,9 @@ fun SignUpScreen(
 
         if (signUpState is SignUpState.BadEmail){
             isBadEmail = true
-        }else if (signUpState is SignUpState.DuplicateAccount){
+        } else if (signUpState == SignUpState.BadPassword) {
+            isBadPassword = true
+        } else if (signUpState is SignUpState.DuplicateAccount){
             InfoMessage(stringResource = R.string.duplicateAccountError)
         } else if (signUpState is SignUpState.BackEndError){
             InfoMessage(stringResource = R.string.createAccountError)
@@ -138,6 +144,7 @@ fun InfoMessage(@StringRes stringResource: Int) {
 @Composable
 private fun PasswordField(
     value: String,
+    isError: Boolean,
     onValueChange: (String) -> Unit,
 ) {
 
@@ -151,6 +158,7 @@ private fun PasswordField(
 
     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
         value = value,
+        isError = isError,
         onValueChange = onValueChange,
         trailingIcon = {
             VisibilityToggle(isVisible) {
@@ -160,7 +168,8 @@ private fun PasswordField(
         },
         visualTransformation = visualTransformation,
         label = {
-            Text(text = stringResource(id = R.string.password))
+            val resource = if (isError) R.string.badPasswordError else R.string.password
+            Text(text = stringResource(id = resource))
         })
 }
 
