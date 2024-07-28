@@ -8,6 +8,9 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.currencyconverter.friends.MainActivity
 import com.currencyconverter.friends.R
+import com.currencyconverter.friends.domain.exeptions.BackEndException
+import com.currencyconverter.friends.domain.user.User
+import com.currencyconverter.friends.domain.user.UserCatalog
 
 fun launchSignUpScreen(
     rule: AndroidComposeTestRule<ActivityScenarioRule<MainActivity>, MainActivity>,
@@ -51,10 +54,23 @@ class SignUpVerification(private val rule: AndroidComposeTestRule<ActivityScenar
     }
 
     fun duplicateAccountErrorIsShown() {
-        val signedUpUserEmail = "alice@friends.com"
-        val signedUpUserPassword = "@l1cePass"
+
         val duplicateAccountError = rule.activity.getString(R.string.duplicateAccountError)
         rule.onNodeWithText(duplicateAccountError)
+            .assertIsDisplayed()
+    }
+
+
+
+    fun backEndErrorIsShown() {
+        val backendError = rule.activity.getString(R.string.createAccountError)
+        rule.onNodeWithText(backendError)
+            .assertIsDisplayed()
+    }
+
+    fun offlineErrorIsShown() {
+        val offlineError = rule.activity.getString(R.string.offlineError)
+        rule.onNodeWithText(offlineError)
             .assertIsDisplayed()
     }
 

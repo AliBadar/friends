@@ -4,12 +4,13 @@ import com.currencyconverter.friends.domain.RegexCredentialsValidator
 import com.currencyconverter.friends.signup.SignUpViewModel
 import com.currencyconverter.friends.domain.user.UserRepository
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
+import com.currencyconverter.friends.domain.user.UserCatalog
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val applicationModule = module {
 
-    single {
+    single<UserCatalog> {
         InMemoryUserCatalog()
     }
 
