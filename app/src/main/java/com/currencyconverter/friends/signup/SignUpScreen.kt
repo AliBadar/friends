@@ -71,18 +71,20 @@ fun SignUpScreen(
         mutableStateOf(false)
     }
 
-    if (signUpState is SignUpState.SignedUp) {
-        onSignUp()
-    } else if (signUpState is SignUpState.BadEmail){
-        isBadEmail = true
-    } else if (signUpState == SignUpState.BadPassword) {
-        isBadPassword = true
-    } else if (signUpState is SignUpState.DuplicateAccount){
-        InfoMessage(stringResource = R.string.duplicateAccountError)
-    } else if (signUpState is SignUpState.BackEndError){
-        InfoMessage(stringResource = R.string.createAccountError)
-    } else if (signUpState is SignUpState.Offline){
-        InfoMessage(stringResource = R.string.offlineError)
+    when (signUpState) {
+        is SignUpState.SignedUp -> onSignUp()
+
+        is SignUpState.BadEmail -> isBadEmail = true
+
+        SignUpState.BadPassword -> isBadPassword = true
+
+        is SignUpState.DuplicateAccount ->
+            InfoMessage(stringResource = R.string.duplicateAccountError)
+
+        is SignUpState.BackEndError -> InfoMessage(stringResource = R.string.createAccountError)
+
+        is SignUpState.Offline -> InfoMessage(stringResource = R.string.offlineError)
+        else -> {}
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
