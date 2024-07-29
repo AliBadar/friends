@@ -6,15 +6,15 @@ class InMemoryUserCatalog(private val usersForgetPassword: MutableMap<String, Mu
     UserCatalog {
     override fun createUser(
         email: String,
-        about: String,
-        passowd: String
+        password: String,
+        about: String
     ): User {
 
         checkAccountExists(email)
 
         val userId = createUserIdFor(email)
         val user = User(userId, email, about)
-        saveUser(passowd, user)
+        saveUser(password, user)
         return user
     }
 

@@ -12,7 +12,7 @@ class UserRepository(private val userCatalog: UserCatalog) {
         about: String,
         passowd: String
     ) = try {
-        val user = userCatalog.createUser(email, about, passowd)
+        val user = userCatalog.createUser(email, passowd, about)
         SignUpState.SignedUp(user)
     } catch (_: DuplicateAccountException) {
         SignUpState.DuplicateAccount

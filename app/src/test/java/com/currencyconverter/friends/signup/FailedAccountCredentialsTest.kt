@@ -2,7 +2,6 @@ package com.currencyconverter.friends.signup
 
 import com.currencyconverter.friends.domain.exeptions.BackEndException
 import com.currencyconverter.friends.domain.exeptions.ConnectionUnavailableException
-import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import com.currencyconverter.friends.domain.user.User
 import com.currencyconverter.friends.domain.user.UserCatalog
 import com.currencyconverter.friends.domain.user.UserRepository
@@ -29,14 +28,14 @@ class FailedAccountCredentialsTest {
     }
 
     class OfflineUserCatalog : UserCatalog {
-        override fun createUser(email: String, about: String, passowd: String): User {
+        override fun createUser(email: String, password: String, about: String): User {
             throw ConnectionUnavailableException()
         }
 
     }
 
     class UnavailableUserCatalog : UserCatalog {
-        override fun createUser(email: String, about: String, passowd: String): User {
+        override fun createUser(email: String, password: String, about: String): User {
           throw BackEndException()
         }
 
