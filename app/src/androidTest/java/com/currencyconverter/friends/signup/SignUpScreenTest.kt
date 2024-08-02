@@ -7,6 +7,7 @@ import com.currencyconverter.friends.domain.exeptions.ConnectionUnavailableExcep
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import com.currencyconverter.friends.domain.user.User
 import com.currencyconverter.friends.domain.user.UserCatalog
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -14,7 +15,7 @@ import org.junit.Test
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
-class SignUpScreenTest {
+ class SignUpScreenTest {
 
     @get:Rule
     val signUpTestRule = createAndroidComposeRule<MainActivity>()
@@ -43,13 +44,34 @@ class SignUpScreenTest {
 
     @Test
     fun displayBadEmailError() {
-
-
         launchSignUpScreen(signUpTestRule) {
             typeEmail("email")
             submit()
         } verify {
             badEmailErrorIsShown()
+        }
+    }
+
+    @Test
+    fun displayBadPasswordError() {
+        launchSignUpScreen(signUpTestRule) {
+            typeEmail("email@friends.com")
+            typePassword("ads")
+            submit()
+            typePassword("newTry")
+        } verify {
+            badPasswordErrorIsNotShown()
+        }
+    }
+
+    @Test
+    fun resetBadEmailError() {
+        launchSignUpScreen(signUpTestRule) {
+            typeEmail("email")
+            submit()
+            typeEmail("email@")
+        } verify {
+            badEmailErrorIsNotShown()
         }
     }
 
@@ -65,7 +87,7 @@ class SignUpScreenTest {
     }
 
     @Test
-    fun displayDuplicateAccountError() {
+    fun displayDuplicateAccountError() = runBlocking<Unit> {
 
 
         val signedUpUserEmail = "alice@friends.com"
@@ -134,14 +156,14 @@ class SignUpScreenTest {
     }
 
     class OfflineUserCatalog : UserCatalog {
-        override fun createUser(email: String, password: String, about: String): User {
+        override suspend fun createUser(email: String, password: String, about: String): User {
             throw ConnectionUnavailableException()
         }
 
     }
 
     class UnavailableUserCatalog : UserCatalog {
-        override fun createUser(email: String, password: String, about: String): User {
+        override suspend fun createUser(email: String, password: String, about: String): User {
             throw BackEndException()
         }
 

@@ -1,6 +1,7 @@
 package com.currencyconverter.friends.signup
 
 import com.currencyconverter.friends.InstantTaskExecutorExtension
+import com.currencyconverter.friends.app.TestDispatchers
 import com.currencyconverter.friends.domain.RegexCredentialsValidator
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import com.currencyconverter.friends.domain.user.User
@@ -16,7 +17,8 @@ class CreateAnAccountTest {
     val regexCredentialsValidator = RegexCredentialsValidator()
 
     val viewModel = SignUpViewModel(
-        regexCredentialsValidator, UserRepository(InMemoryUserCatalog())
+        regexCredentialsValidator, UserRepository(InMemoryUserCatalog()),
+        TestDispatchers()
     )
 
     @Test
@@ -48,7 +50,7 @@ class CreateAnAccountTest {
 
         val userRepository = UserRepository(InMemoryUserCatalog(usersForPassword))
 
-        val viewModel = SignUpViewModel(regexCredentialsValidator, userRepository)
+        val viewModel = SignUpViewModel(regexCredentialsValidator, userRepository, TestDispatchers())
         viewModel.also {
             it.createAccount(user.email, password, user.about)
         }

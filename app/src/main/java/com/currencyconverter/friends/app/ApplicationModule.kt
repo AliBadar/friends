@@ -10,6 +10,9 @@ import org.koin.dsl.module
 
 val applicationModule = module {
 
+    single<CoroutinesDispatchers> {
+        DefaultDispatchers()
+    }
     single<UserCatalog> {
         InMemoryUserCatalog()
     }
@@ -23,13 +26,11 @@ val applicationModule = module {
     }
 
 
-
-
-
     viewModel {
         SignUpViewModel(
             credentialsValidator = get(),
-            userRepository = get()
+            userRepository = get(),
+            dispatchers = get()
         )
     }
 

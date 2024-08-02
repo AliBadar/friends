@@ -1,7 +1,12 @@
 package com.currencyconverter.friends.signup
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,8 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -33,9 +40,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.currencyconverter.friends.R
-import com.currencyconverter.friends.domain.RegexCredentialsValidator
-import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
-import com.currencyconverter.friends.domain.user.UserRepository
+import com.currencyconverter.friends.signup.states.SignUpScreenState
 import com.currencyconverter.friends.signup.states.SignUpState
 import com.currencyconverter.friends.ui.theme.Typography
 
@@ -45,45 +50,29 @@ fun SignUpScreen(
     onSignUp: () -> Unit,
 ) {
 
-    val regexCredentialsValidator = RegexCredentialsValidator()
-    val userCatalog = InMemoryUserCatalog()
-    val userRepository = UserRepository(userCatalog)
-
     val signUpState by signUpViewModel.signUpState.observeAsState()
+    val coroutineScope = rememberCoroutineScope()
 
-    var email by remember {
-        mutableStateOf("")
+    val screenState by remember {
+        mutableStateOf(SignUpScreenState(coroutineScope))
     }
 
-    var password by remember {
-        mutableStateOf("")
-    }
 
-    var about by remember {
-        mutableStateOf("")
-    }
 
-    var isBadEmail by remember {
-        mutableStateOf(false)
-    }
-
-    var isBadPassword by remember {
-        mutableStateOf(false)
-    }
 
     when (signUpState) {
         is SignUpState.SignedUp -> onSignUp()
 
-        is SignUpState.BadEmail -> isBadEmail = true
+        is SignUpState.BadEmail -> screenState.isBadEmail = true
 
-        SignUpState.BadPassword -> isBadPassword = true
+        SignUpState.BadPassword -> screenState.isBadPassword = true
 
-        is SignUpState.DuplicateAccount ->
-            InfoMessage(stringResource = R.string.duplicateAccountError)
+        is SignUpState.DuplicateAccount -> screenState.toggleInfoMessage(R.string.duplicateAccountError)
 
-        is SignUpState.BackEndError -> InfoMessage(stringResource = R.string.createAccountError)
 
-        is SignUpState.Offline -> InfoMessage(stringResource = R.string.offlineError)
+        is SignUpState.BackEndError -> screenState.toggleInfoMessage(R.string.createAccountError)
+
+        is SignUpState.Offline -> screenState.toggleInfoMessage(R.string.offlineError)
         else -> {}
     }
 
@@ -100,18 +89,18 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            EmailField(email, isBadEmail) { it ->
-                email = it
+            EmailField(screenState.email, screenState.showBadEmail) { it ->
+                screenState.email = it
 
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            PasswordField(password, isBadPassword) { password = it }
+            PasswordField(screenState.password, screenState.showBadPassword) { screenState.password = it }
 
             AboutField(
-                value = about,
-                onValueChange = { about = it },
+                value = screenState.about,
+                onValueChange = { screenState.about = it },
                 //onDoneClicked = { with(screenState) { onSignUp(email, password, about) } }
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -120,26 +109,53 @@ fun SignUpScreen(
 
             Button(modifier = Modifier.fillMaxWidth(), onClick = {
 
-                signUpViewModel.createAccount(email, password, about)
+                screenState.resetUiState()
+                with(screenState){
+                    signUpViewModel.createAccount(email, password, about)
+                }
 
             }) {
                 Text(text = stringResource(id = R.string.signUp))
             }
         }
 
+        InfoMessage(screenState.isInfoMessageShowing, stringResource = screenState.currentInfoMessage)
 
     }
 }
 
 @Composable
-fun InfoMessage(@StringRes stringResource: Int) {
+fun InfoMessage(isVisible: Boolean, @StringRes stringResource: Int) {
 
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.error)
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(
+            initialOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
+        ),
+        exit = fadeOut(
+            targetAlpha = 0f,
+            animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
+        )
     ) {
-        Text(text = stringResource(id = stringResource))
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.error,
+            tonalElevation = 4.dp
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                Text(
+                    text = stringResource(id = stringResource),
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onError
+                )
+            }
+        }
     }
 }
 
@@ -158,7 +174,8 @@ private fun PasswordField(
     val visualTransformation =
         if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
 
-    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+    OutlinedTextField(modifier = Modifier.fillMaxWidth()
+        .testTag(stringResource(id = R.string.password)),
         value = value,
         isError = isError,
         onValueChange = onValueChange,
@@ -199,7 +216,9 @@ private fun EmailField(
     isError: Boolean,
     onValueChange: (String) -> Unit,
 ) {
-    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+    OutlinedTextField(modifier = Modifier
+        .fillMaxWidth()
+        .testTag(stringResource(id = R.string.email)),
         value = value,
         isError = isError,
         onValueChange = onValueChange,

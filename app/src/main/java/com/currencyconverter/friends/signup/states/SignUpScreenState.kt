@@ -1,7 +1,10 @@
-package com.currencyconverter.friends.signup
+package com.currencyconverter.friends.signup.states
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -11,7 +14,7 @@ class SignUpScreenState(private val coroutineScope: CoroutineScope) {
     val userCatalog = InMemoryUserCatalog()
 
 
-    var currentInfoMessage by mutableStateOf(0)
+    var currentInfoMessage by mutableIntStateOf(0)
 
     var isInfoMessageShowing by mutableStateOf(false)
 
@@ -24,6 +27,15 @@ class SignUpScreenState(private val coroutineScope: CoroutineScope) {
     var isBadEmail by mutableStateOf(false)
 
     var isBadPassword by mutableStateOf(false)
+
+    private var lastSubmittedEmail by mutableStateOf("")
+    private var lastSubmittedPassword by mutableStateOf("")
+
+    val showBadEmail : Boolean
+        get() = isBadEmail && lastSubmittedEmail == email
+
+    val showBadPassword : Boolean
+        get() = isBadPassword && lastSubmittedPassword == password
 
     fun toggleInfoMessage(@StringRes message: Int) = coroutineScope.launch {
         if (currentInfoMessage != message) {
@@ -38,7 +50,11 @@ class SignUpScreenState(private val coroutineScope: CoroutineScope) {
 
     fun resetUiState() {
         currentInfoMessage = 0
+        lastSubmittedEmail = email
+        lastSubmittedPassword = password
         isInfoMessageShowing = false
+        isBadEmail = false
+        isBadPassword = false
     }
 
 }

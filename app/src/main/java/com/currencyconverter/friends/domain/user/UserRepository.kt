@@ -7,7 +7,7 @@ import com.currencyconverter.friends.signup.states.SignUpState
 
 class UserRepository(private val userCatalog: UserCatalog) {
 
-    fun signUp(
+    suspend fun signUp(
         email: String,
         about: String,
         passowd: String

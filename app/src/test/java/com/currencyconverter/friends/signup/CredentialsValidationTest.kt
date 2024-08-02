@@ -1,6 +1,7 @@
 package com.currencyconverter.friends.signup
 
 import com.currencyconverter.friends.InstantTaskExecutorExtension
+import com.currencyconverter.friends.app.TestDispatchers
 import com.currencyconverter.friends.domain.CredentialsValidationResult
 import com.currencyconverter.friends.domain.RegexCredentialsValidator
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
@@ -16,7 +17,7 @@ import org.junit.jupiter.params.provider.CsvSource
 class CredentialsValidationTest {
 
     val viewModel =
-        SignUpViewModel(RegexCredentialsValidator(), UserRepository(InMemoryUserCatalog()))
+        SignUpViewModel(RegexCredentialsValidator(), UserRepository(InMemoryUserCatalog()), TestDispatchers())
 
     @ParameterizedTest
     @CsvSource(
