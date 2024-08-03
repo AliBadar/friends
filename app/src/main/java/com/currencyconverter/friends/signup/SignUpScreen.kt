@@ -7,6 +7,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -73,6 +76,7 @@ fun SignUpScreen(
         is SignUpState.BackEndError -> screenState.toggleInfoMessage(R.string.createAccountError)
 
         is SignUpState.Offline -> screenState.toggleInfoMessage(R.string.offlineError)
+        SignUpState.Loading -> BlockingLoading()
         else -> {}
     }
 
@@ -96,7 +100,10 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            PasswordField(screenState.password, screenState.showBadPassword) { screenState.password = it }
+            PasswordField(
+                screenState.password,
+                screenState.showBadPassword
+            ) { screenState.password = it }
 
             AboutField(
                 value = screenState.about,
@@ -110,7 +117,7 @@ fun SignUpScreen(
             Button(modifier = Modifier.fillMaxWidth(), onClick = {
 
                 screenState.resetUiState()
-                with(screenState){
+                with(screenState) {
                     signUpViewModel.createAccount(email, password, about)
                 }
 
@@ -119,8 +126,25 @@ fun SignUpScreen(
             }
         }
 
-        InfoMessage(screenState.isInfoMessageShowing, stringResource = screenState.currentInfoMessage)
+        InfoMessage(
+            screenState.isInfoMessageShowing,
+            stringResource = screenState.currentInfoMessage
+        )
 
+    }
+}
+
+@Composable
+fun BlockingLoading() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(stringResource(id = R.string.loading))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(progress = 100f)
+//        CircularProgressIndicator()
     }
 }
 
@@ -174,7 +198,8 @@ private fun PasswordField(
     val visualTransformation =
         if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
 
-    OutlinedTextField(modifier = Modifier.fillMaxWidth()
+    OutlinedTextField(modifier = Modifier
+        .fillMaxWidth()
         .testTag(stringResource(id = R.string.password)),
         value = value,
         isError = isError,

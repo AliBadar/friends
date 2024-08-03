@@ -7,6 +7,7 @@ import com.currencyconverter.friends.domain.exeptions.ConnectionUnavailableExcep
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import com.currencyconverter.friends.domain.user.User
 import com.currencyconverter.friends.domain.user.UserCatalog
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -15,7 +16,7 @@ import org.junit.Test
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
- class SignUpScreenTest {
+class SignUpScreenTest {
 
     @get:Rule
     val signUpTestRule = createAndroidComposeRule<MainActivity>()
@@ -139,6 +140,28 @@ import org.koin.dsl.module
         } verify {
             offlineErrorIsShown()
         }
+    }
+
+    @Test
+    fun displayBlockingLoading() {
+
+        replaceUserCatalogWith(DelayingUserCatalog())
+
+        launchSignUpScreen(signUpTestRule) {
+            typeEmail("caly@friends.com")
+            typePassword("C@lyP1ss#")
+            submit()
+        } verify {
+            blockingLoadingIsShown()
+        }
+    }
+
+    class DelayingUserCatalog : UserCatalog {
+        override suspend fun createUser(email: String, password: String, about: String): User {
+            delay(1000)
+            return User("someId", email, about)
+        }
+
     }
 
     @After

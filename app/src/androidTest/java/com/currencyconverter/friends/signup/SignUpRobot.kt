@@ -99,4 +99,10 @@ class SignUpVerification(private val rule: AndroidComposeTestRule<ActivityScenar
             .assertDoesNotExist()
     }
 
+    fun blockingLoadingIsShown() {
+        val loading = rule.activity.getString(R.string.loading)
+        rule.onNodeWithTag(loading)
+            .assertIsDisplayed()
+    }
+
 }
