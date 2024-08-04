@@ -28,6 +28,8 @@ class SignUpScreenState(private val coroutineScope: CoroutineScope) {
 
     var isBadPassword by mutableStateOf(false)
 
+    var isLoading by mutableStateOf(false)
+
     private var lastSubmittedEmail by mutableStateOf("")
     private var lastSubmittedPassword by mutableStateOf("")
 
@@ -38,6 +40,7 @@ class SignUpScreenState(private val coroutineScope: CoroutineScope) {
         get() = isBadPassword && lastSubmittedPassword == password
 
     fun toggleInfoMessage(@StringRes message: Int) = coroutineScope.launch {
+        isLoading = false
         if (currentInfoMessage != message) {
             currentInfoMessage = message
             if (!isInfoMessageShowing) {
@@ -48,6 +51,18 @@ class SignUpScreenState(private val coroutineScope: CoroutineScope) {
         }
     }
 
+    fun toggleLoading() {
+        isLoading = true
+    }
+
+    fun showBadEmail() {
+        isBadEmail = true
+    }
+
+    fun showBadPassword() {
+        isBadPassword = true
+    }
+
     fun resetUiState() {
         currentInfoMessage = 0
         lastSubmittedEmail = email
@@ -55,6 +70,7 @@ class SignUpScreenState(private val coroutineScope: CoroutineScope) {
         isInfoMessageShowing = false
         isBadEmail = false
         isBadPassword = false
+        isLoading = false
     }
 
 }

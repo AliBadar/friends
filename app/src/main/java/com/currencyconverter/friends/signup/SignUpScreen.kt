@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -66,9 +67,9 @@ fun SignUpScreen(
     when (signUpState) {
         is SignUpState.SignedUp -> onSignUp()
 
-        is SignUpState.BadEmail -> screenState.isBadEmail = true
+        is SignUpState.BadEmail -> screenState.showBadEmail()
 
-        SignUpState.BadPassword -> screenState.isBadPassword = true
+        SignUpState.BadPassword -> screenState.showBadPassword()
 
         is SignUpState.DuplicateAccount -> screenState.toggleInfoMessage(R.string.duplicateAccountError)
 
@@ -76,7 +77,7 @@ fun SignUpScreen(
         is SignUpState.BackEndError -> screenState.toggleInfoMessage(R.string.createAccountError)
 
         is SignUpState.Offline -> screenState.toggleInfoMessage(R.string.offlineError)
-        SignUpState.Loading -> BlockingLoading()
+        SignUpState.Loading -> screenState.toggleLoading()
         else -> {}
     }
 
@@ -131,20 +132,35 @@ fun SignUpScreen(
             stringResource = screenState.currentInfoMessage
         )
 
+        BlockingLoading(screenState.isLoading)
+
     }
 }
 
 @Composable
-fun BlockingLoading() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag(stringResource(id = R.string.loading))
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)),
-        contentAlignment = Alignment.Center
+fun BlockingLoading(
+    isShowing: Boolean
+) {
+    AnimatedVisibility(visible = isShowing,
+        enter = fadeIn(
+            initialAlpha = 0f,
+            animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
+        ),
+        exit = fadeOut(
+            targetAlpha = 0f,
+            animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
+        )
     ) {
-        CircularProgressIndicator(progress = 100f)
-//        CircularProgressIndicator()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag(stringResource(id = R.string.loading))
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)),
+            contentAlignment = Alignment.Center
+        ) {
+//            CircularProgressIndicator()
+            CircularProgressIndicator(progress = 100f)
+        }
     }
 }
 
