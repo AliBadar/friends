@@ -4,6 +4,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.currencyconverter.friends.MainActivity
 import com.currencyconverter.friends.domain.exeptions.BackEndException
 import com.currencyconverter.friends.domain.exeptions.ConnectionUnavailableException
+import com.currencyconverter.friends.domain.user.Following
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import com.currencyconverter.friends.domain.user.User
 import com.currencyconverter.friends.domain.user.UserCatalog
@@ -23,7 +24,12 @@ class SignUpScreenTest {
 
     private val signUpModule = module {
         factory<UserCatalog> {
-            InMemoryUserCatalog()
+            InMemoryUserCatalog(
+                followings = listOf(
+                    Following("saraId", "lucyId"),
+                    Following("annaId", "lucyId")
+                )
+            )
         }
     }
 
@@ -95,7 +101,12 @@ class SignUpScreenTest {
         val signedUpUserPassword = "@l1cePass"
 
 
-        replaceUserCatalogWith(InMemoryUserCatalog().apply {
+        replaceUserCatalogWith(InMemoryUserCatalog(
+            followings = listOf(
+                Following("saraId", "lucyId"),
+                Following("annaId", "lucyId")
+            )
+        ).apply {
             createUser(signedUpUserEmail, "", signedUpUserPassword)
         })
 
@@ -162,11 +173,21 @@ class SignUpScreenTest {
             return User("someId", email, about)
         }
 
+        override fun followedBy(userId: String): List<String> {
+            TODO("Not yet implemented")
+        }
+
     }
 
     @After
     fun tearDown() {
-        replaceUserCatalogWith(InMemoryUserCatalog())
+        replaceUserCatalogWith(InMemoryUserCatalog(
+            followings = listOf(
+                Following("saraId", "lucyId"),
+                Following("annaId", "lucyId")
+            )
+        )
+        )
     }
 
     private fun replaceUserCatalogWith(userCatalog: UserCatalog) {
@@ -183,11 +204,19 @@ class SignUpScreenTest {
             throw ConnectionUnavailableException()
         }
 
+        override fun followedBy(userId: String): List<String> {
+            TODO("Not yet implemented")
+        }
+
     }
 
     class UnavailableUserCatalog : UserCatalog {
         override suspend fun createUser(email: String, password: String, about: String): User {
             throw BackEndException()
+        }
+
+        override fun followedBy(userId: String): List<String> {
+            TODO("Not yet implemented")
         }
 
     }

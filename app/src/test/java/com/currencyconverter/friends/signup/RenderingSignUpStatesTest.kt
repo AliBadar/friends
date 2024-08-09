@@ -3,6 +3,7 @@ package com.currencyconverter.friends.signup
 import com.currencyconverter.friends.InstantTaskExecutorExtension
 import com.currencyconverter.friends.app.TestDispatchers
 import com.currencyconverter.friends.domain.RegexCredentialsValidator
+import com.currencyconverter.friends.domain.user.Following
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import com.currencyconverter.friends.domain.user.User
 import com.currencyconverter.friends.domain.user.UserRepository
@@ -14,7 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(InstantTaskExecutorExtension::class)
 class RenderingSignUpStatesTest {
 
-    private val userRepository = UserRepository(InMemoryUserCatalog())
+    private val userRepository = UserRepository(InMemoryUserCatalog(
+        followings = listOf(
+            Following("saraId", "lucyId"),
+            Following("annaId", "lucyId")
+        )
+    )
+    )
     private val viewModel = SignUpViewModel(RegexCredentialsValidator(), userRepository, TestDispatchers())
     private val tom = User("tomId", "tom@friends.com", "about Tom")
 

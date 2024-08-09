@@ -5,13 +5,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.currencyconverter.friends.domain.user.Following
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SignUpScreenState(private val coroutineScope: CoroutineScope) {
-    val userCatalog = InMemoryUserCatalog()
+    val userCatalog = InMemoryUserCatalog(
+        followings = listOf(
+            Following("saraId", "lucyId"),
+            Following("annaId", "lucyId")
+        )
+    )
 
 
     var currentInfoMessage by mutableIntStateOf(0)

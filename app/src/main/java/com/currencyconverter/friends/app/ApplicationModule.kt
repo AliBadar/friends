@@ -1,6 +1,7 @@
 package com.currencyconverter.friends.app
 
 import com.currencyconverter.friends.domain.RegexCredentialsValidator
+import com.currencyconverter.friends.domain.user.Following
 import com.currencyconverter.friends.signup.SignUpViewModel
 import com.currencyconverter.friends.domain.user.UserRepository
 import com.currencyconverter.friends.domain.user.InMemoryUserCatalog
@@ -14,7 +15,12 @@ val applicationModule = module {
         DefaultDispatchers()
     }
     single<UserCatalog> {
-        InMemoryUserCatalog()
+        InMemoryUserCatalog(
+            followings = listOf(
+                Following("saraId", "lucyId"),
+                Following("annaId", "lucyId")
+            )
+        )
     }
 
     factory {

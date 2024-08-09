@@ -6,4 +6,6 @@ interface UserCatalog {
         password: String,
         about: String,
     ): User
+
+    fun followedBy(userId: String): List<String>
 }
