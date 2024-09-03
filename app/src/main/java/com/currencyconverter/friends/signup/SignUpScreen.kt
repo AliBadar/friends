@@ -46,12 +46,12 @@ import androidx.compose.ui.unit.dp
 import com.currencyconverter.friends.R
 import com.currencyconverter.friends.signup.states.SignUpScreenState
 import com.currencyconverter.friends.signup.states.SignUpState
-import com.currencyconverter.friends.ui.theme.Typography
+import com.currencyconverter.friends.ui.composables.ScreenTitle
 
 @Composable
 fun SignUpScreen(
     signUpViewModel: SignUpViewModel,
-    onSignUp: () -> Unit,
+    onSignUp: (String) -> Unit,
 ) {
 
     val signUpState by signUpViewModel.signUpState.observeAsState()
@@ -65,7 +65,7 @@ fun SignUpScreen(
 
 
     when (signUpState) {
-        is SignUpState.SignedUp -> onSignUp()
+        is SignUpState.SignedUp -> onSignUp((signUpState as SignUpState.SignedUp).user.id)
 
         is SignUpState.BadEmail -> screenState.showBadEmail()
 
@@ -267,18 +267,6 @@ private fun EmailField(
             val resource = if (isError) R.string.badEmailError else R.string.email
             Text(text = stringResource(id = resource))
         })
-}
-
-@Composable
-private fun ScreenTitle(@StringRes resource: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = stringResource(id = resource), style = Typography.headlineMedium
-        )
-    }
 }
 
 @Composable

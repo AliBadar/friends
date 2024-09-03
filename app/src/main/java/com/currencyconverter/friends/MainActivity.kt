@@ -13,15 +13,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.currencyconverter.friends.signup.SignUpScreen
 import com.currencyconverter.friends.signup.SignUpViewModel
-import com.currencyconverter.friends.timeline.TimeLine
+import com.currencyconverter.friends.timeline.TimeLineScreen
+import com.currencyconverter.friends.timeline.TimeLineViewModel
 import com.currencyconverter.friends.ui.theme.FriendsTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
     private val signUpViewModel: SignUpViewModel by viewModel()
+    private val timeLineViewModel: TimeLineViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,20 +38,27 @@ class MainActivity : ComponentActivity() {
                 ) {
 
 
-
                     NavHost(navController = navController, startDestination = SIGN_UP) {
-                        composable(SIGN_UP){
-                            SignUpScreen(signUpViewModel) {
-                                navController.navigate(TIME_LINE)
+                        composable(SIGN_UP) {
+                            SignUpScreen(signUpViewModel) { signeUpUserId ->
+                                navController.navigate("$TIME_LINE/$signeUpUserId") {
+                                    popUpTo(SIGN_UP) {
+                                        inclusive = true
+                                    }
+                                }
                             }
                         }
 
-                        composable(TIME_LINE){
-                            TimeLine()
+                        composable(route = "$TIME_LINE/{userId}",
+                            arguments = listOf(navArgument("userId") {})
+                        ) { backStackEntry ->
+                            TimeLineScreen(
+                                backStackEntry.arguments?.getString("userId") ?: "",
+                                timeLineViewModel
+                            )
                         }
 
                     }
-
 
 
 //                    Box(modifier = Modifier.fillMaxSize(),
